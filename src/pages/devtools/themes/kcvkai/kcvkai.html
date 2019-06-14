@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+		<!-- @nonbuildstart -->
+		<link href="../../../../assets/css/bootstrap.css" rel="stylesheet" type="text/css">
+		<!-- @nonbuildend -->
+		<link href="../../../../assets/css/global.css" rel="stylesheet" type="text/css">
+		<link href="../../../../assets/css/jquery-ui.min.css" rel="stylesheet" type="text/css">
+		<link href="kcvkai.css" rel="stylesheet" type="text/css">
+    </head>
+
+    <body>
+        <!-- MAIN UI -->
+        <div id="waiting-overlay"></div>
+        <div id="info-header">
+			<div id="left-block">
+				<div id="admiral-info-left">
+					<div id="admiral-nameplate">
+						<div id="admiral-name">TestTTK</div>
+					</div>
+					<div id="admiral-comment">デス★パ★シート</div>
+				</div>
+				<div id="admiral-info-right">
+					<div id="admiral-rank">Admiral</div>
+					<div id="admiral-level"><span class="hq-small">HQ LV.</span> <span id="admiral-hqlvl">120</span></div>
+				</div>
+			</div>
+			<div id="right-block-a">
+				<div id="resources-1">Buckets</div>
+				<div id="resources-2">Flamethrowers</div>
+				<div id="resources-3">Devmats</div>
+				<div id="resources-4">Screws</div>
+			</div>
+			<div id="right-block-b">
+				<div id="button-1"></div>
+				<div id="button-2"></div>
+			</div>
+		</div>
+        <div id="wrapper">
+			<div id="tab-panel">
+				<div id="tab-main" class="tabs-tab active" data-target="main"><span>Overview</span></div>
+				<div id="tab-fleets" class="tabs-tab" data-target="fleets"><span>Fleets</span></div>
+				<div id="tab-battle" class="tabs-tab" data-target="battle"><span>Battle</span></div>
+				<div id="tab-exped" class="tabs-tab" data-target="exped"><span>Expedition</span></div>
+				<div id="tab-quest" class="tabs-tab" data-target="quest"><span>Quests</span></div>
+				<div id="tab-items" class="tabs-tab" data-target="items"><span>Inventory</span></div>
+				<div class="spacer"></div>
+				<div id="btn-stratroom"><a href="#">Strategy Room</a></div>
+			</div>
+			<div id="content-main" class="panel-content">
+				<p>Kappa</p>
+			</div>
+			<div id="content-fleets" class="panel-content">
+				<p>MingLee</p>
+			</div>
+			<div id="content-battle" class="panel-content">
+				<p>4Head</p>
+			</div>
+			<div id="content-exped" class="panel-content">
+				<p>OMEGALUL</p>
+			</div>
+			<div id="content-quest" class="panel-content">
+				<p>PepeHands</p>
+			</div>
+			<div id="content-items" class="panel-content">
+				<p>notpp</p>
+			</div>
+        </div>
+        <div class="statusbar waiting" id="statusbar">
+            <table id="status">
+                <tr>
+                    <td id="status-text">Waiting for KanColle to start</td>
+                    <td id="status-detail"></td>
+                    <td id="misc"></td>
+                </tr>
+            </table>
+        </div>
+
+        <!-- SCRIPTS N' STUFF-->
+		<script type="text/javascript" src="../../../../assets/js/global.js"></script>
+		<script type="text/javascript" src="../../../../assets/js/Dexie.min.js"></script>
+		<!-- @nonbuildstart -->
+		<script type="text/javascript" src="../../../../assets/js/jquery.min.js"></script>
+        <!-- @nonbuildend -->
+        <script type="text/javascript" src="../../../../assets/js/jquery-ui.min.js"></script>
+		
+		<!-- @buildimportjs ../../../../library/managers.js -->
+		<!-- @buildimportjs ../../../../library/objects.js -->
+		
+		<!-- @nonbuildstart -->
+		<script type="text/javascript" src="../../../../library/objects/Node.js"></script>
+		<script type="text/javascript" src="../../../../library/objects/Fleet.js"></script>
+		<script type="text/javascript" src="../../../../library/objects/AkashiRepair.js"></script>
+		<script type="text/javascript" src="../../../../library/objects/Gear.js"></script>
+		<script type="text/javascript" src="../../../../library/objects/Messengers.js"></script>
+		<script type="text/javascript" src="../../../../library/objects/Player.js"></script>
+		<script type="text/javascript" src="../../../../library/objects/Quest.js"></script>
+		<script type="text/javascript" src="../../../../library/objects/Request.js"></script>
+		<script type="text/javascript" src="../../../../library/objects/Screenshot.js"></script>
+		<script type="text/javascript" src="../../../../library/objects/Server.js"></script>
+		<script type="text/javascript" src="../../../../library/objects/SettingsBox.js"></script>
+		<script type="text/javascript" src="../../../../library/objects/Ship.js"></script>
+		<script type="text/javascript" src="../../../../library/objects/Sortie.js"></script>
+		<script type="text/javascript" src="../../../../library/objects/Timer.js"></script>
+		<!-- @nonbuildend -->
+		
+		<!-- @nonbuildstart -->
+		<script type="text/javascript" src="../../../../library/managers/ConfigManager.js"></script>
+		<script type="text/javascript" src="../../../../library/managers/GearManager.js"></script>
+		<script type="text/javascript" src="../../../../library/managers/PlayerManager.js"></script>
+		<script type="text/javascript" src="../../../../library/managers/QuestManager.js"></script>
+		<script type="text/javascript" src="../../../../library/managers/ShipManager.js"></script>
+		<script type="text/javascript" src="../../../../library/managers/SortieManager.js"></script>
+		<script type="text/javascript" src="../../../../library/managers/TimerManager.js"></script>
+		<script type="text/javascript" src="../../../../library/managers/CalculatorManager.js"></script>
+		<!-- @nonbuildend -->
+		<script type="text/javascript" src="../../../../library/modules/ChromeSync.js"></script>
+		<script type="text/javascript" src="../../../../library/modules/BattlePrediction.js"></script>
+		<script type="text/javascript" src="../../../../library/modules/QuestSync/Sync.js"></script>
+		<script type="text/javascript" src="../../../../library/modules/QuestSync/ContentScript.js"></script>
+		<script type="text/javascript" src="../../../../library/modules/Dashboard.js"></script>
+		<script type="text/javascript" src="../../../../library/modules/Database.js"></script>
+		<script type="text/javascript" src="../../../../library/modules/Log/Log.js"></script>
+		<script type="text/javascript" src="../../../../library/modules/Log/Messaging.js"></script>
+		<script type="text/javascript" src="../../../../library/modules/Log/Devtools.js"></script>
+		<script type="text/javascript" src="../../../../library/modules/Kcsapi.js"></script>
+		<script type="text/javascript" src="../../../../library/modules/Network.js"></script>
+		<script type="text/javascript" src="../../../../library/modules/Panel.js"></script>
+		<script type="text/javascript" src="../../../../library/modules/Translation.js"></script>
+		<script type="text/javascript" src="../../../../library/modules/Master.js"></script>
+		<script type="text/javascript" src="../../../../library/modules/Translation.js"></script>
+		<script type="text/javascript" src="../../../../library/modules/Meta.js"></script>
+
+		<script type="text/javascript" src="../../../../library/helpers/KanColleHelpers.js"></script>
+		<script type="text/javascript" src="../../../../library/helpers/ExpeditionHelper.js"></script>
+		
+		<script type="text/javascript" src="kcvkai.js"></script>
+    </body>
+</html>
