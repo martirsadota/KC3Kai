@@ -14,27 +14,54 @@
         <!-- MAIN UI -->
         <div id="waiting-overlay"></div>
         <div id="info-header">
-			<div id="left-block">
-				<div id="admiral-info-left">
-					<div id="admiral-nameplate">
-						<div id="admiral-name">TestTTK</div>
-					</div>
-					<div id="admiral-comment">デス★パ★シート</div>
-				</div>
-				<div id="admiral-info-right">
-					<div id="admiral-rank">Admiral</div>
-					<div id="admiral-level"><span class="hq-small">HQ LV.</span> <span id="admiral-hqlvl">120</span></div>
-				</div>
+			<div id="admiral-info-left">
+				<table>
+					<tr>
+						<td id="admiral-name">TestTTK</td>
+					</tr>
+					<tr>
+						<td id="admiral-comment">デス★パ★シート</td>
+					</tr>
+				</table>
 			</div>
+			<div id="admiral-info-right">
+				<table id="admiral-hq">
+					<tr>
+						<td id="admiral-rank" colspan="2">Admiral</td>
+					</tr>
+					<tr id="hq-lv-xp">
+						<td id="admiral-level"><span class="hq-small">HQ LV.</span> <span id="admiral-hqlvl">120</span></td>
+						<td id="hq-xp">NEXT: <span id="xp-remain">30,547</span></td>
+					</tr>
+					<tr>
+						<td colspan="2">
+							<div id="xpbar">
+								<span id="xpbar-fg"></span>
+							</div>
+						</td>
+					</tr>
+				</table>
+			</div>
+			<div class="spacer"></div>
 			<div id="right-block-a">
-				<div id="resources-1">Buckets</div>
-				<div id="resources-2">Flamethrowers</div>
-				<div id="resources-3">Devmats</div>
-				<div id="resources-4">Screws</div>
+				<table id="resources-a">
+					<tr>
+						<td class="icon"><img src="img/icon-bucket.svg" title="Buckets"/></td><td id="bucket-amount">3,000</td>
+						<td class="icon"><img src="img/icon-devmat.svg" title="Development Materials"/></td><td id="devmat-amount">3,000</td>
+					</tr>
+					<tr>
+						<td class="icon"><img src="img/icon-flamethrower.svg" title="Flamethrowers"/></td><td id="flamethrowers-amount">3,000</td>
+						<td class="icon"><img src="img/icon-screw.svg" title="Screws"/></td><td id="screws-amount">3,000</td>
+					</tr>
+				</table>
 			</div>
 			<div id="right-block-b">
-				<div id="button-1"></div>
-				<div id="button-2"></div>
+				<table id="buttons">
+					<tr>
+						<td><img src="img/icon-sound.svg"/></td>
+						<td><img src="img/icon-snapshot.svg"/></td>
+					</tr>
+				</table>
 			</div>
 		</div>
         <div id="wrapper">
