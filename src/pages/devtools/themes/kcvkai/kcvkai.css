@@ -40,7 +40,7 @@ a, a:link, a:hover, a:active, a:visited {
 #info-header {
     top: 0;
     height: 64px;
-    padding: 4px;
+    padding: 4px 8px;
     display: flex;
     flex-flow: row wrap;
     justify-content: space-between;
@@ -88,8 +88,8 @@ a, a:link, a:hover, a:active, a:visited {
     flex-flow: column wrap;
 }
 
-div[id^="resources-"] {
-    height: 50%;
+#right-block-a {
+    flex: 0 0 128px;
 }
 
 #admiral-info-left,
@@ -105,6 +105,7 @@ div[id^="resources-"] {
 
 #admiral-info-right {
     justify-content: center;
+    flex: 0 0 128px;
 }
 
 #admiral-nameplate {
@@ -128,18 +129,84 @@ div[id^="resources-"] {
 
 #admiral-rank {
     font-size: 12px;
-    max-width: 36px;
-    text-align: center;
     text-transform: uppercase;
     line-height: 11px;
     color: #CCCCCC;
-    display: table;
 }
 
 #admiral-comment {
     height: 25%;
     font-size: 12px;
     color: #AAAAAA;
+}
+
+#admiral-hq {
+    width: 100%;
+}
+
+#hq-lv-xp td {
+    width: 50%;
+}
+
+#hq-xp {
+    font-size: 11px;
+    color: #AAAAAA;
+    text-align: right;
+}
+
+#hq-xp, #admiral-level {
+    vertical-align: text-bottom;
+}
+
+#xpbar {
+    background-color: #424242;
+    min-width: 150px;
+    max-width: 100%;
+    height: 6px;
+    overflow: hidden;
+}
+
+#xpbar-fg {
+    background-color: #AAAAAA;
+    width: 50%;
+    height: 6px;
+    z-index: 3;
+    float: left;
+}
+
+table#resources-a {
+    height: 100%;
+}
+
+table#resources-a td {
+    vertical-align: middle;
+}
+
+table#resources-a td.icon {
+    height: 16px;
+    width: 16px;
+    text-align: center;
+}
+
+table#resources-a td[id$="-amount"] {
+    padding-left: 4px;
+    padding-right: 8px;
+}
+
+table#resources-a img {
+    height: 16px;
+}
+
+table#buttons td {
+    vertical-align: middle;
+    text-align: center;
+    height: 100%;
+    padding: 3px;
+}
+
+table#buttons td img {
+    width: 48px;
+    height: 48px;
 }
 
 .panel-content {
@@ -193,7 +260,6 @@ div[id^="resources-"] {
 }
 
 .spacer {
-    min-width: 128px;
     min-height: 0;
     max-height: 100%;
     flex: 15 15 48px;
