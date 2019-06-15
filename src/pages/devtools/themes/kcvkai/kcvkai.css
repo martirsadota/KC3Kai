@@ -102,10 +102,13 @@ span.liner {
 }
 
 #right-block-a {
+<<<<<<< HEAD
     flex: 0 0 48px;
 }
 
 #right-block-b {
+=======
+>>>>>>> Day 2
     flex: 0 0 128px;
 }
 
@@ -165,10 +168,14 @@ span.liner {
     width: 50%;
 }
 
+<<<<<<< HEAD
 #hq-xp,
 #shipgirls-max,
 #equip-max,
 .box-header-text {
+=======
+#hq-xp {
+>>>>>>> Day 2
     font-size: 11px;
     color: #AAAAAA;
     text-align: right;
@@ -194,6 +201,7 @@ span.liner {
     float: left;
 }
 
+<<<<<<< HEAD
 table#resources-a,
 table#girls-equip {
     height: 100%;
@@ -206,19 +214,38 @@ table#girls-equip td {
 
 table#resources-a td.icon,
 table#girls-equip td.icon {
+=======
+table#resources-a {
+    height: 100%;
+}
+
+table#resources-a td {
+    vertical-align: middle;
+}
+
+table#resources-a td.icon {
+>>>>>>> Day 2
     height: 16px;
     width: 16px;
     text-align: center;
 }
 
+<<<<<<< HEAD
 table#resources-a td[id$="-amount"],
 table#girls-equip td[id$="-amount"] {
+=======
+table#resources-a td[id$="-amount"] {
+>>>>>>> Day 2
     padding-left: 4px;
     padding-right: 8px;
 }
 
+<<<<<<< HEAD
 table#resources-a img,
 table#girls-equip img {
+=======
+table#resources-a img {
+>>>>>>> Day 2
     height: 16px;
 }
 
