@@ -17,6 +17,10 @@ body {
     display: none;
 }
 
+#templates {
+    display: none;
+}
+
 a, a:link, a:hover, a:active, a:visited {
     color: #FFFFFF;
     text-decoration: none;
@@ -103,12 +107,18 @@ span.liner {
 
 #right-block-a {
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> Day 3
     flex: 0 0 48px;
 }
 
 #right-block-b {
+<<<<<<< HEAD
 =======
 >>>>>>> Day 2
+=======
+>>>>>>> Day 3
     flex: 0 0 128px;
 }
 
@@ -169,13 +179,19 @@ span.liner {
 }
 
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> Day 3
 #hq-xp,
 #shipgirls-max,
 #equip-max,
 .box-header-text {
+<<<<<<< HEAD
 =======
 #hq-xp {
 >>>>>>> Day 2
+=======
+>>>>>>> Day 3
     font-size: 11px;
     color: #AAAAAA;
     text-align: right;
@@ -202,6 +218,7 @@ span.liner {
 }
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 table#resources-a,
 table#girls-equip {
     height: 100%;
@@ -216,36 +233,56 @@ table#resources-a td.icon,
 table#girls-equip td.icon {
 =======
 table#resources-a {
+=======
+table#resources-a,
+table#girls-equip {
+>>>>>>> Day 3
     height: 100%;
 }
 
-table#resources-a td {
+table#resources-a td,
+table#girls-equip td {
     vertical-align: middle;
 }
 
+<<<<<<< HEAD
 table#resources-a td.icon {
 >>>>>>> Day 2
+=======
+table#resources-a td.icon,
+table#girls-equip td.icon {
+>>>>>>> Day 3
     height: 16px;
     width: 16px;
     text-align: center;
 }
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 table#resources-a td[id$="-amount"],
 table#girls-equip td[id$="-amount"] {
 =======
 table#resources-a td[id$="-amount"] {
 >>>>>>> Day 2
+=======
+table#resources-a td[id$="-amount"],
+table#girls-equip td[id$="-amount"] {
+>>>>>>> Day 3
     padding-left: 4px;
     padding-right: 8px;
 }
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 table#resources-a img,
 table#girls-equip img {
 =======
 table#resources-a img {
 >>>>>>> Day 2
+=======
+table#resources-a img,
+table#girls-equip img {
+>>>>>>> Day 3
     height: 16px;
 }
 
@@ -265,6 +302,10 @@ table#buttons td img {
     background-color: transparent;
     border: 0;
     color: #FFFFFF;
+<<<<<<< HEAD
+=======
+    display: flex;
+>>>>>>> Day 3
     top: 64px;
     bottom: 22px;
     left: 96px;
@@ -304,6 +345,27 @@ table#buttons td img {
     width: 350px;
     height: calc(100% - 8px);
     flex-flow: column nowrap;
+}
+
+.panel-content > .tile-box {
+    margin: 8px;
+    padding: 0;
+    display: flex;
+    flex-flow: row wrap;
+    background-color: #222222;
+}
+
+.box-header {
+    min-height: 18px;
+    max-height: 18px;
+    background-color: #2D2D2D;
+    text-transform: uppercase;
+    width: 100%;
+    top: 0;
+    display: flex;
+    align-items: center;
+    position: sticky;
+    padding-left: 8px;
 }
 
 #tab-panel {
@@ -376,9 +438,14 @@ table#buttons td img {
 }
 
 #btn-stratroom img {
+<<<<<<< HEAD
     width: 18px;
     height: 18px;
     margin-right: 4px;
+=======
+    width: 16px;
+    height: 16px;
+>>>>>>> Day 3
 }
 
 table#status {
@@ -392,6 +459,7 @@ table#status tr td {
     padding-left: 8px;
 }
 
+<<<<<<< HEAD
 .tile-box .shipboxes {
     flex: 1 1 auto;
     padding: 4px 8px 0;
@@ -420,28 +488,68 @@ table#status tr td {
 }
 
 .midbox {
+=======
+.shipbox {
+    max-height: 48px;
+    min-height: 48px;
+    min-width: 325px;
+    width: 100%;
+    display: flex;
+    padding: 0px 8px;
+    margin: 4px 0px;
+}
+
+.shipbox .shipicon {
+    max-width: 48px;
+    min-width: 48px;
+    max-height: 48px;
+    min-height: 48px;
+    float: left;
+}
+
+.shipbox .shipicon img {
+    width: 48px;
+    height: 48px;
+}
+
+.ship-nameplate {
+>>>>>>> Day 3
     display: flex;
     align-items: center;
     margin-left: 4px;
     width: 100%;
+<<<<<<< HEAD
     flex-flow: column wrap;
     align-items: flex-start;
+=======
+>>>>>>> Day 3
 }
 
 .shipclass {
     text-transform: uppercase;
+<<<<<<< HEAD
     padding: 1px 2px;
     height: 6px;
+=======
+    padding: 2px 4px;
+    height: 10px;
+>>>>>>> Day 3
     width: 30px;
     text-align: center;
     background-color: #424242;
     color: #CCCCCC;
+<<<<<<< HEAD
     font-size: 10px;
+=======
+    font-size: 12px;
+    margin-left: 8px;
+>>>>>>> Day 3
     display: table;
     float: left;
 }
 
 .shipname {
+<<<<<<< HEAD
     font-size: 16px;
     margin-left: 4px;
 }
@@ -461,6 +569,22 @@ table#status tr td {
 .moraledot {
     width: 8px;
     height: 8px;
+=======
+    font-size: 22px;
+    margin-left: 4px;
+    width: 100%;
+}
+
+.shipcondition {
+    float: right;
+    display: flex;
+    align-items: center;
+}
+
+.moraledot {
+    width: 12px;
+    height: 12px;
+>>>>>>> Day 3
     border-radius: 50%;
     margin-right: 4px;
 }
@@ -485,6 +609,7 @@ table#status tr td {
     background-color: #FF4747;
 }
 
+<<<<<<< HEAD
 .morale-value {
     font-size: 10px;
     color: #CCCCCC;
@@ -633,4 +758,9 @@ table#status tr td {
 .statbox {
     margin-left: 4px;
     width: 64px;
+=======
+.moralevalue {
+    font-size: 14px;
+    color: #CCCCCC;
+>>>>>>> Day 3
 }
