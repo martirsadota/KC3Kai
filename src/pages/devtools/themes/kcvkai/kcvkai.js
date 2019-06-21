@@ -10,6 +10,14 @@ $(document).on('ready', function(){
         $('.panel-content').hide();
         $(`#content-${target}`).show();
     });
+    
+    // stratroom click handler
+    $('#btn-stratroom').on('click', function() {
+        new RMsg('service', 'strategyRoomPage', {
+            tabPath: 'profile'
+        }).execute();
+        return false;
+    });
 
     // set UI to ready state
     makeReady();

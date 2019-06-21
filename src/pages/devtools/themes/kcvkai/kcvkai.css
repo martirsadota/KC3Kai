@@ -12,9 +12,18 @@ body {
     font-size: 16px;
 }
 
+#templates {
+    display: none;
+}
+
 a, a:link, a:hover, a:active, a:visited {
     color: #FFFFFF;
     text-decoration: none;
+}
+
+span.liner {
+    display: flex;
+    align-items: center;
 }
 
 #waiting-overlay {
@@ -44,6 +53,7 @@ a, a:link, a:hover, a:active, a:visited {
     display: flex;
     flex-flow: row wrap;
     justify-content: space-between;
+    overflow: hidden;
 }
 
 #wrapper {
@@ -71,7 +81,8 @@ a, a:link, a:hover, a:active, a:visited {
 }
 
 #statusbar.onsortie,
-#tab-panel.onsortie .tabs-tab.active {
+#tab-panel.onsortie .tabs-tab.active,
+.box-header.onsortie {
     background-color: #CA5100;
 }
 
@@ -82,13 +93,18 @@ a, a:link, a:hover, a:active, a:visited {
 }
 
 #right-block-a,
-#right-block-b {
+#right-block-b,
+#right-block-c {
     height: 100%;
     display: flex;
     flex-flow: column wrap;
 }
 
 #right-block-a {
+    flex: 0 0 48px;
+}
+
+#right-block-b {
     flex: 0 0 128px;
 }
 
@@ -148,7 +164,10 @@ a, a:link, a:hover, a:active, a:visited {
     width: 50%;
 }
 
-#hq-xp {
+#hq-xp,
+#shipgirls-max,
+#equip-max,
+.box-header-text {
     font-size: 11px;
     color: #AAAAAA;
     text-align: right;
@@ -174,26 +193,31 @@ a, a:link, a:hover, a:active, a:visited {
     float: left;
 }
 
-table#resources-a {
+table#resources-a,
+table#girls-equip {
     height: 100%;
 }
 
-table#resources-a td {
+table#resources-a td,
+table#girls-equip td {
     vertical-align: middle;
 }
 
-table#resources-a td.icon {
+table#resources-a td.icon,
+table#girls-equip td.icon {
     height: 16px;
     width: 16px;
     text-align: center;
 }
 
-table#resources-a td[id$="-amount"] {
+table#resources-a td[id$="-amount"],
+table#girls-equip td[id$="-amount"] {
     padding-left: 4px;
     padding-right: 8px;
 }
 
-table#resources-a img {
+table#resources-a img,
+table#girls-equip img {
     height: 16px;
 }
 
@@ -213,12 +237,33 @@ table#buttons td img {
     background-color: transparent;
     border: 0;
     color: #FFFFFF;
-    padding: 4px;
+    display: flex;
     top: 64px;
     bottom: 22px;
     left: 128px;
     right: 0;
     position: fixed;
+}
+
+.panel-content > .tile-box {
+    margin: 8px;
+    padding: 0;
+    display: flex;
+    flex-flow: row wrap;
+    background-color: #222222;
+}
+
+.box-header {
+    min-height: 18px;
+    max-height: 18px;
+    background-color: #2D2D2D;
+    text-transform: uppercase;
+    width: 100%;
+    top: 0;
+    display: flex;
+    align-items: center;
+    position: sticky;
+    padding-left: 8px;
 }
 
 #tab-panel {
@@ -266,16 +311,21 @@ table#buttons td img {
 }
 
 .tabs-tab span,
-#btn-stratroom a {
+#btn-stratroom > div {
     display: table-cell;
     vertical-align: middle;
     padding-left: 8px;
 }
 
-#btn-stratroom a {
+#btn-stratroom > div {
     text-transform: uppercase;
     font-size: 12px;
     color: #AAAAAA;
+}
+
+#btn-stratroom img {
+    width: 16px;
+    height: 16px;
 }
 
 table#status {
@@ -287,4 +337,92 @@ table#status {
 
 table#status tr td {
     padding-left: 8px;
+}
+
+.shipbox {
+    max-height: 48px;
+    min-height: 48px;
+    min-width: 325px;
+    width: 100%;
+    display: flex;
+    padding: 0px 8px;
+    margin: 4px 0px;
+}
+
+.shipbox .shipicon {
+    max-width: 48px;
+    min-width: 48px;
+    max-height: 48px;
+    min-height: 48px;
+    float: left;
+}
+
+.shipbox .shipicon img {
+    width: 48px;
+    height: 48px;
+}
+
+.ship-nameplate {
+    display: flex;
+    align-items: center;
+    margin-left: 4px;
+    width: 100%;
+}
+
+.shipclass {
+    text-transform: uppercase;
+    padding: 2px 4px;
+    height: 10px;
+    width: 30px;
+    text-align: center;
+    background-color: #424242;
+    color: #CCCCCC;
+    font-size: 12px;
+    margin-left: 8px;
+    display: table;
+    float: left;
+}
+
+.shipname {
+    font-size: 22px;
+    margin-left: 4px;
+    width: 100%;
+}
+
+.shipcondition {
+    float: right;
+    display: flex;
+    align-items: center;
+}
+
+.moraledot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    margin-right: 4px;
+}
+
+.moraledot.morale-great {
+    background-color: #FFEE00;
+}
+
+.moraledot.morale-good {
+    background-color: #FFF89D;
+}
+
+.moraledot.morale-normal {
+    background-color: #FFFFFF;
+}
+
+.moraledot.morale-bad {
+    background-color: #FFAB73;
+}
+
+.moraledot.morale-verybad {
+    background-color: #FF4747;
+}
+
+.moralevalue {
+    font-size: 14px;
+    color: #CCCCCC;
 }
