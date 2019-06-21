@@ -44,6 +44,16 @@
 			</div>
 			<div class="spacer"></div>
 			<div id="right-block-a">
+				<table id="girls-equip">
+					<tr>
+						<td class="icon"><img src="img/icon-shipgirls.svg" title="Shipgirls"/></td><td id="shipgirls-amount"><span id="shipgirls-current">300<span id="shipgirls-max">&nbsp;/&nbsp;<span id="shipgirls-max-num">320</span></span></td>
+					</tr>
+					<tr>
+						<td class="icon"><img src="img/icon-equip.svg" title="Equipment"/></td><td id="equip-amount"><span id="equip-current">1,206<span id="equip-max">&nbsp;/&nbsp;<span id="equip-max-num">1,500</span></span></td>
+					</tr>
+				</table>
+			</div>
+			<div id="right-block-b">
 				<table id="resources-a">
 					<tr>
 						<td class="icon"><img src="img/icon-bucket.svg" title="Buckets"/></td><td id="bucket-amount">3,000</td>
@@ -55,7 +65,7 @@
 					</tr>
 				</table>
 			</div>
-			<div id="right-block-b">
+			<div id="right-block-c">
 				<table id="buttons">
 					<tr>
 						<td><img src="img/icon-sound.svg"/></td>
@@ -73,10 +83,25 @@
 				<div id="tab-quest" class="tabs-tab" data-target="quest"><span>Quests</span></div>
 				<div id="tab-items" class="tabs-tab" data-target="items"><span>Inventory</span></div>
 				<div class="spacer"></div>
-				<div id="btn-stratroom"><a href="#">Strategy Room</a></div>
+				<div id="btn-stratroom"><div><span class="liner"><img src="img/icon-stratroom.svg"/>&nbsp;Strategy Room</span></div></div>
 			</div>
 			<div id="content-main" class="panel-content">
-				<p>Kappa</p>
+				<div class="shipboxes tile-box">
+					<div class="box-header">
+						<span class="box-header-text">Fleet 1 <span id="fleet-1-name">第1艦隊</span></span>
+					</div>
+					<div class="shipbox">
+						<div class="shipicon"><img src="../../../../assets/img/ships/9.png"/></div>
+						<div class="ship-nameplate">
+								<div class="shipclass">DD</div>
+								<div class="shipname">Fubuki</div>
+								<div class="shipcondition" title="Morale">
+									<div class="moraledot morale-great"></div>
+									<div class="moralevalue">53</div>
+								</div>
+						</div>
+					</div>
+				</div>
 			</div>
 			<div id="content-fleets" class="panel-content">
 				<p>MingLee</p>
@@ -102,7 +127,12 @@
                     <td id="misc"></td>
                 </tr>
             </table>
-        </div>
+		</div>
+		
+		<!--TEMPLATES-->
+		<div id="templates">
+			
+		</div>
 
         <!-- SCRIPTS N' STUFF-->
 		<script type="text/javascript" src="../../../../assets/js/global.js"></script>
