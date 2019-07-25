@@ -262,7 +262,7 @@
 						getItem = data["api_get_item" + index];
 					return csvQuoteIfNecessary(
 						(flag === 4 ? KC3Meta.useItemName(getItem.api_useitem_id) :
-						({"0":"None","1":"Bucket","2":"Blowtorch","3":"DevMat"})[flag] || flag)
+						({"0":"None","1":"Bucket","2":"Blowtorch","3":"DevMat","5":"Fcoin"})[flag] || flag)
 						+
 						(flag > 0 && getItem ? " x" + getItem.api_useitem_count : "")
 					);
@@ -301,8 +301,8 @@
 				};
 				// Get data from local DB
 				let db = KC3Database.con.expedition.where("hq").equals(PlayerManager.hq.id);
-				// Only need mission ID >= 100
-				if(forAsw) db = db.and(r => r.mission >= 100);
+				// Only need mission ID > 40 (not only asw, but all news)
+				if(forAsw) db = db.and(r => r.mission > 40);
 				db.reverse().toArray(function(result){
 					result.forEach(function(expedInfo){
 						const fleetStats = {

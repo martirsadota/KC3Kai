@@ -416,14 +416,19 @@
 
 			// Show fleet info
 			const fstats = kcFleet.totalStats(true);
+			const fstatsImp = kcFleet.totalStats(true, "fire");
 			$(".detail_level .detail_value", fleetBox).text( kcFleet.totalLevel() )
-				.attr("title", "{0}: {4}\n{1}: {5}\n{2}: {6}\n{3}: {7}".format(
+				.attr("title", "w/Imp: No\tYes\n{0}: {4}\t{8}\n{1}: {5}\t{9}\n{2}: {6}\t{10}\n{3}: {7}\t{11}".format(
 					KC3Meta.term("ExpedTotalFp"),
 					KC3Meta.term("ExpedTotalAa"),
 					KC3Meta.term("ExpedTotalAsw"),
 					KC3Meta.term("ExpedTotalLos"),
-					fstats.fp, fstats.aa, fstats.as, fstats.ls)
-				);
+					fstats.fp, fstats.aa, fstats.as, fstats.ls,
+					Math.qckInt("floor", fstatsImp.fp , 1),
+					Math.qckInt("floor", fstatsImp.aa , 1),
+					Math.qckInt("floor", fstatsImp.as , 1),
+					Math.qckInt("floor", fstatsImp.ls , 1)
+				));
 			$(".detail_los .detail_icon img", fleetBox).attr("src", "/assets/img/stats/los"+ConfigManager.elosFormula+".png" );
 			$(".detail_los .detail_value", fleetBox).text( Math.qckInt("floor", kcFleet.eLoS(), 1) );
 			if(ConfigManager.elosFormula > 1) {
@@ -569,7 +574,8 @@
 				return;
 			}
 			const masterData = kcGear.master();
-			const slotMaxSize = kcShip.master().api_maxeq[index];
+			// to avoid red slot size 1 when Large Flying Boat equipped
+			const slotMaxSize = masterData.api_type[2] === 41 ? 1 : kcShip.master().api_maxeq[index];
 			const isExslot = index >= kcShip.slotnum;
 			// ex-slot capacity not implemented yet, no aircraft equippable
 			$(".slot_capacity", gearBox).text(isExslot ? "-" : capacity)

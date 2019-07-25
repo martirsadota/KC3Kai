@@ -111,6 +111,14 @@ Provides access to data on built-in JSON files
 			151: 94,
 			281: 38,
 		},
+		// ships with special remodeling animation, ordered by implementated time,
+		// from `main.js/RemodelUtil.isSpKaizo`. btw `full_2x` is used for this case
+		specialRemodelFromIds: [
+			149, // Kongou K2 -> K2C
+			277, // Akagi Kai -> K2
+			594, // Akagi K2 -> K2E
+			350, // Umikaze Kai -> K2
+		],
 		// all ships for special cut-in attacks
 		specialCutinIds: [541, 571, 573, 576, 601, 1496],
 		nelsonTouchShips: [571, 576],
@@ -546,6 +554,39 @@ Provides access to data on built-in JSON files
 			};
 		},
 		
+		// ship category defined by in-game client, see `main.js#ShipCategory`
+		shipCategory :function(stype){
+			return ((t) => {
+				switch(t) {
+					case 1: return "DE";
+					case 2: return "DD";
+					case 3: // CL + CLT
+					case 4: return "CL";
+					case 5: // CA + CAV
+					case 6: return "CA";
+					case 7: // CVL
+					case 11: // CV + CVB
+					case 18: return "CV_CVL";
+					case 8: // BC = FBB
+					case 9: // BB
+					case 12: // unused XBB
+						return "BB_BC";
+					case 10: return "BBV";
+					case 13: // SS + SSV
+					case 14: return "SS";
+					case 15: // unused AP
+					case 16: // AV
+					case 17: // LHA
+					case 19: // AR
+					case 20: // AS
+					case 22: // AO
+						return "AV_AO_AS";
+					case 21: return "CLT"; // should be CT
+					default: return "Unsupport type";
+				}
+			})(stype);
+		},
+		
 		ctype :function(id){
 			return this._ctype[id] || "??";
 		},
@@ -623,6 +664,8 @@ Provides access to data on built-in JSON files
 				landBasedAircraftType3Ids: d.landBasedAircraftType3Ids,
 				antiAirFighterType2Ids: d.antiAirFighterType2Ids,
 				airStrikeBomberType2Ids: d.airStrikeBomberType2Ids,
+				antiLandDiveBomberIds: d.antiLandDiveBomberIds,
+				evadeAntiAirFireIds: d.evadeAntiAirFireIds,
 				aswAircraftType2Ids: d.aswAircraftType2Ids,
 				nightAircraftType3Ids: d.nightAircraftType3Ids,
 				interceptorsType3Ids: d.interceptorsType3Ids,
