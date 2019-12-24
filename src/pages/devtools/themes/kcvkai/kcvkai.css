@@ -762,5 +762,36 @@ table#status tr td {
 .moralevalue {
     font-size: 14px;
     color: #CCCCCC;
+<<<<<<< HEAD
 >>>>>>> Day 3
+=======
+}
+
+.hp-bar {
+    display: flex;
+    min-width: 100%;
+}
+
+.nameplate {
+    display: flex;
+    width: 100%;
+    align-items: center;
+    z-index: 10;
+}
+
+.hp-fore.hp-full {
+    align-items: center;
+    background-color: #007ACD;
+    opacity: 0.3;
+    width: 100%;
+    z-index: 0;
+}
+
+.hp-fore.hp-taiha {
+    align-items: center;
+    background-color: #FF4747;
+    opacity: 0.3;
+    width: 100%;
+    z-index: 0;
+>>>>>>> some wip stuff
 }
