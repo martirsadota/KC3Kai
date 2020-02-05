@@ -74,6 +74,7 @@ Previously known as "Reactor"
 			// ship type filters settings:
 			//api_oss_setting: {api_language_type: 0, api_oss_items: [1, 1, 1, 1, 1, 1, 1, 1]}
 			// using skin: api_skin_id
+			// flagship position: api_position_id
 		},
 		
 		"api_req_member/require_info":function(params, response, headers){
@@ -348,6 +349,9 @@ Previously known as "Reactor"
 					case 88: PlayerManager.consumables.tea = thisItem.api_count; break;
 					case 89: PlayerManager.consumables.dinnerTicket = thisItem.api_count; break;
 					case 90: PlayerManager.consumables.setsubunBeans = thisItem.api_count; break;
+					case 91: PlayerManager.consumables.emergencyRepair = thisItem.api_count; break;
+					case 92: PlayerManager.consumables.newRocketDevMaterial = thisItem.api_count; break;
+					case 93: PlayerManager.consumables.sardine = thisItem.api_count; break;
 					default: break;
 				}
 			}
@@ -1068,12 +1072,15 @@ Previously known as "Reactor"
 		/* Start LBAS Sortie
 		-------------------------------------------------------*/
 		"api_req_map/start_air_base":function(params, response, headers, decodedParams){
-			// Target nodes attacked by sortied LB, format string: `edge1,edge2`
+			// Target nodes attacked by sortied LB, format string: `edge1,edge2`,
+			// 'strike_point_N' refers to the sequence number of land base (`.api_rid`),
+			// which means `api_strike_point_1` will be undefined if LB #2 or #3 sortied only.
+			// see `main.js#AirUnitGoAPI.prototype._connect`
 			const strikePoints = [
 				decodedParams.api_strike_point_1,
 				decodedParams.api_strike_point_2,
 				decodedParams.api_strike_point_3
-			];
+			].filter(p => !!p);
 			const utcHour = Date.toUTChours(headers.Date);
 			var consumedFuel = 0, consumedAmmo = 0;
 			var sortiedBase = 0;
@@ -1131,6 +1138,34 @@ Previously known as "Reactor"
 					response.api_data.api_destruction_battle
 				);
 				KC3Network.trigger("LandBaseAirRaid");
+				if(response.api_data.api_destruction_battle.api_m2 > 0){ 
+					KC3Network.trigger("DebuffNotify", response.api_data.api_destruction_battle);
+				}
+			}
+		},
+		
+		/* Emergency Anchorage Repair Confirmed
+		-------------------------------------------------------*/
+		"api_req_map/anchorage_repair":function(params, response, headers){
+			const usedShipMstId = response.api_data.api_used_ship,
+				usedShipMst = KC3Master.ship(usedShipMstId),
+				updatedShips = response.api_data.api_ship_data;
+			console.log("Emergency Anchorage Repair performed by", KC3Meta.shipName(usedShipMst.api_name), updatedShips);
+			// Akashi (any form)/Akitsushima Kai in fleet, < Chuuha?
+			// Repaired ships < Taiha, gain ceil(30%/25% of max hp) in range of Ship Repair Facilities,
+			// Steel should be consumed either, repaired ships also gain 15-20 morale.
+			// see https://kancolle.fandom.com/wiki/Emergency_Repair_Material
+			// TODO: PlayerManager.lastMaterial[2] -= consumedTotalSteel
+			// Consume 1 emergency repair material
+			PlayerManager.consumables.emergencyRepair -= 1;
+			PlayerManager.setConsumables();
+			KC3Network.trigger("Consumables");
+			// Since this type repairing supposed to be happened on non-battle node,
+			// no `api_get_member/ship_deck` API call beofore next `/next` call,
+			// repaired ships data will be updated by result of this call.
+			if(Array.isArray(updatedShips)) {
+				KC3ShipManager.set(updatedShips);
+				KC3Network.trigger("Fleet");
 			}
 		},
 		
@@ -1314,6 +1349,9 @@ Previously known as "Reactor"
 			KC3Network.trigger("Quests");
 			
 			KC3Network.delay(1,"Fleet","GearSlots");
+			if(response.api_data.api_m2 > 0) {
+				KC3Network.trigger("DebuffNotify", response.api_data);
+			}
 		},
 		"api_req_combined_battle/battleresult":function(params, response, headers){
 			resultScreenQuestFulfillment(response.api_data);
@@ -1548,7 +1586,7 @@ Previously known as "Reactor"
 				const bonusType = bonus.api_type;
 				// Known types: 1=Consumable, 2=Unlock a fleet, 3=Furniture box, 4=LSC unlock,
 				//   5=LBAS unlock, 6=Exped resupply unlock, 11=Ship, 12=Slotitem, 13=Useitem,
-				//   14=Furniture, 15=Aircraft conversion, 16=Equipment consumption
+				//   14=Furniture, 15=Equipment conversion, 16=Equipment consumption, 18=Rank points
 				if(bonusType === 11){
 					const shipId = (bonus.api_item || {}).api_ship_id;
 					console.log("Quest gained ship", quest, shipId, bonus);
@@ -1750,6 +1788,12 @@ Previously known as "Reactor"
 		/* Expedition Selection Screen
 		  -------------------------------------------------------*/
 		"api_get_member/mission":function(params, response, headers) {
+			if(Array.isArray(response.api_data.api_limit_time)) {
+				// Actual Monthly Expedition reset time in seconds,
+				// might be more in this array for other time periods?
+				PlayerManager.hq.monthlyExpedResetTime = response.api_data.api_limit_time[0] || 0;
+				PlayerManager.hq.save();
+			}
 			KC3Network.trigger("ExpeditionSelection");
 		},
 
@@ -1926,63 +1970,80 @@ Previously known as "Reactor"
 		
 		/* Craft Equipment
 		-------------------------------------------------------*/
-		"api_req_kousyou/createitem":function(params, response, headers){
-			var
-				resourceUsed = [ params.api_item1, params.api_item2, params.api_item3, params.api_item4 ],
-				failed       = (typeof response.api_data.api_slot_item == "undefined"),
+		"api_req_kousyou/createitem":function(params, response, headers, decodedParams){
+			const // resources used per item
+				resourceUsed = [decodedParams.api_item1, decodedParams.api_item2,
+					decodedParams.api_item3, decodedParams.api_item4]
+					.map(v => parseInt(v, 10)),
+				// will be 1 if multiple crafting (3 times in a row currently) is enabled
+				multiFlag    = parseInt(decodedParams.api_multiple_flag, 10) > 0,
+				// total flag, will be 1 if any craft gets successful item
+				failedFlag   = !response.api_data.api_create_flag,
+				itemsCreated = response.api_data.api_get_items,
+				materials    = response.api_data.api_material,
 				utcSeconds   = Date.toUTCseconds(headers.Date),
 				utcHour      = Date.toUTChours(headers.Date);
+			var lastSuccessRosterId = null, lastSuccessMasterId = null;
+			const devmatsBefore = PlayerManager.consumables.devmats;
+			const devmatsAfter = (materials && materials[6]) || devmatsBefore;
 			
-			// Log into development History
-			KC3Database.Develop({
-				flag: PlayerManager.fleets[0].ship(0).masterId,
-				rsc1: resourceUsed[0],
-				rsc2: resourceUsed[1],
-				rsc3: resourceUsed[2],
-				rsc4: resourceUsed[3],
-				result: (!failed)?response.api_data.api_slot_item.api_slotitem_id:-1,
-				time: utcSeconds
-			});
+			if(Array.isArray(itemsCreated)) {
+				itemsCreated.forEach(item => {
+					const success = item && item.api_slotitem_id > 0;
+					
+					// Log into development History
+					KC3Database.Develop({
+						flag: PlayerManager.fleets[0].ship(0).masterId,
+						rsc1: resourceUsed[0],
+						rsc2: resourceUsed[1],
+						rsc3: resourceUsed[2],
+						rsc4: resourceUsed[3],
+						result: success ? item.api_slotitem_id : -1,
+						time: utcSeconds
+					});
+					
+					KC3Database.Naverall({
+						hour: utcHour,
+						type: "critem",
+						data: resourceUsed.concat([0,0,success,0]).map(v => -v)
+					});
+					
+					KC3QuestManager.get(605).increment(); // F1: Daily Development 1
+					KC3QuestManager.get(607).increment(); // F3: Daily Development 2
+					
+					// Checks if the single development went great
+					if(success) {
+						// Add new equipment to local data
+						KC3GearManager.set([{
+							api_id: item.api_id,
+							api_level: 0,
+							api_locked: 0,
+							api_slotitem_id: item.api_slotitem_id
+						}]);
+						// Remember last successful item for compatibility
+						lastSuccessRosterId = item.api_id;
+						lastSuccessMasterId = item.api_slotitem_id;
+					}
+				});
+			}
 			
-			KC3Database.Naverall({
-				hour: utcHour,
-				type: "critem",
-				data: resourceUsed.concat([0,0,!failed,0]).map(function(x){return -x;})
-			});
-			
-			if(Array.isArray(response.api_data.api_material)){
-				PlayerManager.setResources(utcSeconds, response.api_data.api_material.slice(0,4));
-				PlayerManager.consumables.devmats = response.api_data.api_material[6];
+			if(Array.isArray(materials)) {
+				PlayerManager.setResources(utcSeconds, materials.slice(0,4));
+				PlayerManager.consumables.devmats = devmatsAfter;
 				PlayerManager.setConsumables();
 			}
 			
-			KC3QuestManager.get(605).increment(); // F1: Daily Development 1
-			KC3QuestManager.get(607).increment(); // F3: Daily Development 2
-			
-			// Checks if the development went great
-			if(!failed){
-				// Add new equipment to local data
-				KC3GearManager.set([{
-					api_id: response.api_data.api_slot_item.api_id,
-					api_level: 0,
-					api_locked: 0,
-					api_slotitem_id: response.api_data.api_slot_item.api_slotitem_id
-				}]);
-				
-				// Trigger listeners passing crafted IDs
-				KC3Network.trigger("CraftGear", {
-					itemId: response.api_data.api_slot_item.api_id,
-					itemMasterId: response.api_data.api_slot_item.api_slotitem_id,
-					resourceUsed: resourceUsed
-				});
-			} else {
-				KC3Network.trigger("CraftGear", {
-					itemId: null,
-					itemMasterId: null,
-					resourceUsed: resourceUsed
-				});
-			}
-			
+			// Trigger panel activity event according result(s)
+			KC3Network.trigger("CraftGear", {
+				// Keep old properties for compatibility of other panel themes
+				itemId: lastSuccessRosterId,
+				itemMasterId: lastSuccessMasterId,
+				failedFlag: failedFlag,
+				multiFlag: multiFlag,
+				items: itemsCreated,
+				devmats: [devmatsBefore, devmatsAfter],
+				resourceUsed: resourceUsed
+			});
 			KC3Network.trigger("Consumables");
 			KC3Network.trigger("Quests");
 		},
@@ -2106,6 +2167,9 @@ Previously known as "Reactor"
 					switch(gearMaster.api_id){
 						case 3: // 10cm Twin High-angle Gun Mount
 							KC3QuestManager.get(686).increment(0); // F77 quarterly index 0
+							break;
+						case 4: // 14cm Single Gun Mount
+							KC3QuestManager.get(653).increment(); // F90 quarterly
 							break;
 						case 19: // Type 96 Fighter
 							KC3QuestManager.get(626).increment(1); // F22 monthly index 1
@@ -2290,6 +2354,8 @@ Previously known as "Reactor"
 		-------------------------------------------------------*/
 		"api_req_kaisou/powerup":function(params, response, headers){
 			const consumedShipIds = params.api_id_items.split("%2C");
+			// New flag for in-game button: Remodeling (Post unequip) since 2020-01-14
+			const scrapGearFlag = params.api_slot_dest_flag == 1;
 			const consumedShips = consumedShipIds.map(id => KC3ShipManager.get(id));
 			
 			// To trigger panel activity notification, and TsunDB data submission
@@ -2334,9 +2400,9 @@ Previously known as "Reactor"
 				consumedMasterLevels: consumedShips.map(s => s.level)
 			});
 			
-			// Remove consumed ships and their equipment
+			// Remove consumed ships and (optional) their equipment
 			$.each(consumedShipIds, function(_, rosterId){
-				KC3ShipManager.remove(rosterId);
+				KC3ShipManager.remove(rosterId, !scrapGearFlag);
 				KC3Network.trigger("ShipSlots");
 				KC3Network.trigger("GearSlots");
 			});
@@ -2477,6 +2543,15 @@ Previously known as "Reactor"
 				break;
 				case 84: // exchange 20 beans + 40 devmats with a Ginga
 					//if(itemId === 90) { PlayerManager.consumables.setsubunBeans -= 20; PlayerManager.consumables.devmats -= 40; }
+				break;
+				case 91: // exchange 3 sardine with resources [100, 100, 0, 0]
+					//if(itemId === 93) PlayerManager.consumables.sardine -= 3;
+				break;
+				case 92: // exchange 7 sardine with materials [0, 1, 0, 1]
+					//if(itemId === 93) PlayerManager.consumables.sardine -= 7;
+				break;
+				case 93: // exchange 30 sardine with a Type 2 12cm Mortar Kai and 3 devmats
+					//if(itemId === 93) PlayerManager.consumables.sardine -= 30;
 				break;
 				default:
 					if(isNaN(exchangeType)){
@@ -2736,8 +2811,21 @@ Previously known as "Reactor"
 					[280,1,[1,3], true, true], // Bm8: 2nd requirement: [W1-3] S-rank the boss node
 					[280,2,[1,4], true, true], // Bm8: 3rd requirement: [W1-4] S-rank the boss node
 					[280,3,[2,1], true, true], // Bm8: 4th requirement: [W2-1] S-rank the boss node
+					[284,0,[1,4], true, true], // Bq11: 1st requirement: [W1-4] S-rank the boss node
+					[284,1,[2,1], true, true], // Bq11: 2nd requirement: [W2-1] S-rank the boss node
+					[284,2,[2,2], true, true], // Bq11: 3rd requirement: [W2-2] S-rank the boss node
+					[284,3,[2,3], true, true], // Bq11: 4th requirement: [W2-3] S-rank the boss node
 					[822,0,[2,4], true], // Bq1: Sortie to [W2-4] and S-rank the boss node 2 times
+					[845,0,[4,1], true], // Bq12: 1st requirement: [W4-1] S-rank the boss node
+					[845,1,[4,2], true], // Bq12: 2nd requirement: [W4-2] S-rank the boss node
+					[845,2,[4,3], true], // Bq12: 3rd requirement: [W4-3] S-rank the boss node
+					[845,3,[4,4], true], // Bq12: 4th requirement: [W4-4] S-rank the boss node
+					[845,4,[4,5], true], // Bq12: 5th requirement: [W4-5] S-rank the boss node
 					[854,3,[6,4], true, true], // Bq2: 4th requirement: [W6-4] S-rank the boss node
+					[872,0,[7,2], true, true, [15]], // Bq10: 1st requirement: [W7-2-M] S-rank 2nd boss node
+					[872,1,[5,5], true, true], // Bq10: 2nd requirement: [W5-5] S-rank the boss node
+					[872,2,[6,2], true, true], // Bq10: 3rd requirement: [W6-2] S-rank the boss node
+					[872,3,[6,5], true, true], // Bq10: 4th requirement: [W6-5] S-rank the boss node
 					[875,0,[5,4], true, true], // Bq6: Sortie to [W5-4] S-rank the boss node
 					[888,0,[5,1], true, true], // Bq7: 1st requirement: [W5-1] S-rank the boss node
 					[888,1,[5,3], true, true], // Bq7: 2nd requirement: [W5-3] S-rank the boss node
@@ -2751,6 +2839,10 @@ Previously known as "Reactor"
 					[894,2,[2,1], true, true], // Bq9: 3rd requirement: [W2-1] S-rank the boss node
 					[894,3,[2,2], true, true], // Bq9: 4th requirement: [W2-2] S-rank the boss node
 					[894,4,[2,3], true, true], // Bq9: 5th requirement: [W2-3] S-rank the boss node
+					[903,0,[5,1], true, true], // Bq13: 1st requirement: [W5-1] S-rank the boss node
+					[903,1,[5,4], true, true], // Bq13: 2nd requirement: [W5-4] S-rank the boss node
+					[903,2,[6,4], true, true], // Bq13: 3rd requirement: [W6-4] S-rank the boss node
+					[903,3,[6,5], true, true], // Bq13: 4th requirement: [W6-5] S-rank the boss node
 				],
 				[ /* SS RANK */ ]
 			].slice(0, rankPt+1)
@@ -2769,14 +2861,18 @@ Previously known as "Reactor"
 				});
 		} else {
 			KC3QuestManager.get(303).increment(); // C2: Daily Exercises 1
-			if(rankPt >= 3) {
+			if(rankPt >= 3) { // B-Rank+
 				KC3QuestManager.get(304).increment(); // C3: Daily Exercises 2
 				KC3QuestManager.get(302).increment(); // C4: Weekly Exercises
 				KC3QuestManager.get(311).increment(); // C8: Monthly Exercises 1
 				if(KC3QuestManager.isPrerequisiteFulfilled(318))
 					KC3QuestManager.get(318).increment(); // C16: Monthly Exercises 2
 				if(KC3QuestManager.isPrerequisiteFulfilled(330))
-					KC3QuestManager.get(330).increment(); // C29: Quarterly Exercises
+					KC3QuestManager.get(330).increment(); // C29: Quarterly Exercises 1
+			}
+			if(rankPt >= 5) { // S-Rank+
+				if(KC3QuestManager.isPrerequisiteFulfilled(337))
+					KC3QuestManager.get(337).increment(); // C38: Quarterly Exercises 2
 			}
 		}
 	}

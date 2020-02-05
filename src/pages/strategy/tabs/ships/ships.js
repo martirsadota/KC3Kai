@@ -54,6 +54,10 @@
 			this.shipCache = [];
 			for(const key in KC3ShipManager.list){
 				const shipData = KC3ShipManager.list[key];
+				// Exclude ship(s) that not exist in master to avoid render error
+				if(!KC3Master.ship(shipData.masterId)) {
+					continue;
+				}
 				const preparedData = this.prepareShipData(shipData);
 				this.shipCache.push(preparedData);
 			}
@@ -70,8 +74,17 @@
 				$(".filters .ship_types").slideToggle(300);
 				$(".filters .input_filter").slideToggle(300);
 				$(".filters .massSelect").slideToggle(300, function(){
-					$(".fold_button").toggleClass("glyph_minus", $(this).is(":visible"));
-					$(".fold_button").toggleClass("glyph_plus", !$(this).is(":visible"));
+					$(".filters_label .fold_button").toggleClass("glyph_minus", $(this).is(":visible"));
+					$(".filters_label .fold_button").toggleClass("glyph_plus", !$(this).is(":visible"));
+					if(self.scrollList){
+						self.toggleTableScrollbar(true);
+					}
+				});
+			});
+			$(".fleet_stats_label").on("click", function(){
+				$(".filters .fleet_stats").slideToggle(300, function(){
+					$(".fleet_stats_label .fold_button").toggleClass("glyph_minus", $(this).is(":visible"));
+					$(".fleet_stats_label .fold_button").toggleClass("glyph_plus", !$(this).is(":visible"));
 					if(self.scrollList){
 						self.toggleTableScrollbar(true);
 					}
@@ -361,18 +374,44 @@
 			}
 
 			$(".ingame_page").remove();
+
 			let visibleShips = 0;
-			$(".ship_list .ship_item").each(function() {
+			let [sumLevel, sumExp] = [0, 0];
+
+			$(".ship_list .ship_item").each(function () {
 				if (!$(this).hasClass("hidden_by_name")) {
-					$(this).removeClass("odd").removeClass("even")
-						.addClass(visibleShips % 2 ? "even" : "odd");
-					if (visibleShips % 10 === 0)
-						$("<div>").addClass("ingame_page")
-						.html("Page " + Math.ceil((visibleShips + 1) / 10))
-						.insertBefore(this).toggle(self.pageNo);
+					$(this).removeClass("odd even").addClass(visibleShips % 2 ? "even" : "odd");
+					if (visibleShips % 10 === 0) {
+						$("<div>")
+							.addClass("ingame_page")
+							.html("Page " + Math.ceil((visibleShips + 1) / 10))
+							.insertBefore(this)
+							.toggle(self.pageNo);
+					}
 					visibleShips++;
+
+					// Calculate statistic
+					const id = Number($('.ship_id', $(this)).text());
+					const ship = KC3ShipManager.get(id);
+					if (ship.rosterId) {
+						sumLevel += ship.level;
+						sumExp += ship.exp[0];
+					}
 				}
 			});
+
+			// Update statistic
+			const localeOptions = {
+				minimumFractionDigits: 1,
+				maximumFractionDigits: 1
+			};
+			const getSumDisplay = n => n.toLocaleString();
+			const getAvarageDisplay = n => visibleShips ? (n / visibleShips).toLocaleString(undefined, localeOptions) : 0;
+			// $(".fleet_stats_label .sum_ships").text(visibleShips);
+			$(".fleet_stats .fleet_stat .sum_level").text(getSumDisplay(sumLevel));
+			$(".fleet_stats .fleet_stat .average_level").text(getAvarageDisplay(sumLevel));
+			$(".fleet_stats .fleet_stat .sum_exp").text(getSumDisplay(sumExp));
+			$(".fleet_stats .fleet_stat .average_exp").text(getAvarageDisplay(sumExp));
 
 			// update listed ship counter
 			// have to take filtered list by data into account since hidden rows are still in list
@@ -1106,7 +1145,6 @@
 							cElm.onRecompute(cShip);
 						return;
 					}
-
 					// elements constructing for the time-consuming 'first time rendering'
 					const cElm = $(".tab_ships .factory .ship_item").clone().appendTo(self.shipList);
 					cShip.view = cElm;
@@ -1218,10 +1256,13 @@
 				});
 
 				self.shipList.show();
-				$(".ship_count .count_value .listed").text(filteredShips.length)
+
+				$(".ship_count .count_value .listed")
+					.text(filteredShips.length)
 					.data("filtered", filteredShips.length);
 				$(".ship_count .count_value .total").text(self.shipCache.length);
 				$(".ship_count .count_value").show();
+
 				self.refreshInputFilter();
 				self.toggleTableScrollbar(self.scrollList);
 				self.isLoading = false;

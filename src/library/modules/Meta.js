@@ -118,6 +118,7 @@ Provides access to data on built-in JSON files
 			277, // Akagi Kai -> K2
 			594, // Akagi K2 -> K2E
 			350, // Umikaze Kai -> K2
+			293, // Yuubari Kai -> K2
 		],
 		// all ships for special cut-in attacks
 		specialCutinIds: [541, 571, 573, 576, 601, 1496],
@@ -139,7 +140,9 @@ Provides access to data on built-in JSON files
 			577: 245, 578: 190, 579: 7,   580: 58,  581: 581,
 			582: 582, 583: 583, 584: 7,   585: 161, 586: 574,
 			587: 298, 588: 266, 589: 310, 590: 309, 591: 284,
-			592: 332, 593: 314,
+			592: 332, 593: 314, 594: 594, 595: 595, 596: 340,
+			597: 597, 598: 598, 599: 280, 600: 50,  601: 356,
+			602: 362, 603: 278,
 		},
 		
 		/* Initialization
@@ -666,6 +669,7 @@ Provides access to data on built-in JSON files
 				airStrikeBomberType2Ids: d.airStrikeBomberType2Ids,
 				antiLandDiveBomberIds: d.antiLandDiveBomberIds,
 				evadeAntiAirFireIds: d.evadeAntiAirFireIds,
+				highAltitudeInterceptorIds: d.highAltitudeInterceptorIds,
 				aswAircraftType2Ids: d.aswAircraftType2Ids,
 				nightAircraftType3Ids: d.nightAircraftType3Ids,
 				interceptorsType3Ids: d.interceptorsType3Ids,

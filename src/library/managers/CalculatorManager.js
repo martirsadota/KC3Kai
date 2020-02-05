@@ -110,7 +110,7 @@
                 planeListHtml += "#{0}\u2003"
                     .format(1 + idx);
                 planeListHtml += $("<img />").attr("src", KC3Meta.shipIcon(p.shipMasterId))
-                    .css(iconStyles).prop("outerHTML");
+                    .css(iconStyles).css("image-rendering", "auto").prop("outerHTML");
                 planeListHtml += $("<img />").attr("src", KC3Meta.itemIcon(p.icon))
                     .css(iconStyles).prop("outerHTML");
                 planeListHtml += '<span style="color:#45a9a5">\u2605{0}</span>\u2003'
@@ -282,6 +282,17 @@
      */
     const isLandBasesSupplied = () => {
         return PlayerManager.bases.every(base => base.isPlanesSupplied());
+    };
+
+    /**
+     * @return {number} the fighter power modifier dependent on how many high-altitude interceptors on defense mode, capped at 3
+     * @see https://cdn.discordapp.com/attachments/208624431818342400/620539904694288395/lbas_tables_swdn.png
+     */
+    const getLandBaseHighAltitudeModifier = (world) => {
+        return [0.5, 0.8, 1.1, 1.2][PlayerManager.bases
+            .filter(base => base.map === world && base.action === 2)
+            .reduce((acc, base) => acc + base.getHighAltitudeInterceptorCount(), 0)
+        ] || 1.2;
     };
 
     /**
@@ -485,16 +496,17 @@
     /**
      * Calculates remaining time until next in-game Quest/PvP/RankPtCutOff reset.
      * @param {number} now - timestamp of 'now', current timestamp by default.
+     * @param {number} expedLimitTimestamp - monthly exped reset timestamp from API result.
      * @return {Object} an Object contains the HH:MM:SS strings of {quest, pvp, rank, quarterly}.
      */
-    const remainingTimeUntilNextResets = (now = Date.now()) => {
+    const remainingTimeUntilNextResets = (now = Date.now(), expedLimitTimestamp = 0) => {
         const nextResets = nextResetsTimestamp(now);
         return {
             quest: String(Math.floor((nextResets.quest - now) / 1000)).toHHMMSS(),
             pvp: String(Math.floor((nextResets.pvp - now) / 1000)).toHHMMSS(),
             rank: String(Math.floor((nextResets.rank - now) / 1000)).toHHMMSS(),
             quarterly: String(Math.floor((nextResets.quarterly - now) / 1000)).toHHMMSS(true),
-            exped: String(Math.floor((nextResets.exped - now) / 1000)).toHHMMSS(true),
+            exped: String(Math.floor(((expedLimitTimestamp || nextResets.exped) - now) / 1000)).toHHMMSS(true),
         };
     };
 
@@ -512,6 +524,7 @@
         getLandBasesSortieCost,
         getLandBasesWorstCond,
         isLandBasesSupplied,
+        getLandBaseHighAltitudeModifier,
         
         enemyFighterPower,
         fighterPowerIntervals,

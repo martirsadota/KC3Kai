@@ -244,9 +244,7 @@
 			
 			// Show damaged CG of shipgirl or abyssal boss
 			$(".tab_mstship .shipInfo .cgswf .dmg_mode").on("click", function(e){
-				if(!KC3Master.isSeasonalShip(self.currentShipId)){
-					self.showShip(self.currentShipId, true, false);
-				}
+				self.showShip(self.currentShipId, true, false);
 			});
 			
 			// View all CG types
@@ -424,22 +422,28 @@
 				KC3Master.isAbyssalShip(ship_id) || viewCgMode ? "full" :
 				"card";
 			var kcs2Src = `http://${this.server_ip}/kcs2/resources` +
-				KC3Master.png_file(ship_id, cgType, "ship", tryDamagedGraph && !KC3Master.isSeasonalShip(ship_id));
+				KC3Master.png_file(ship_id, cgType, "ship", tryDamagedGraph);
 			if(this.currentCardVersion) kcs2Src += `?version=${this.currentCardVersion}`;
 			
 			if(this.croppie) this.croppie.croppie("destroy");
 			if(showAllGraphs){
 				$(".tab_mstship .shipInfo .cgswf").hide();
 				const cgList = $('<div class="cglist"></div>').appendTo(".tab_mstship .shipInfo .basic");
-				// To avoid loading seasonal image types not existed,
+				// To avoid loading seasonal image types not existed (no card and damaged basically),
 				// see `ShipLoader.prototype.getSpecificAlbumImageLoadList`
-				const isSpecificAlbumTypes = [754, 755, 984, 997, 1003, 1004,
-					1005, 1006, 1007, 1008, 1009, 1010, 1011, 1012, 1013,
-					1014, 1015, 1016, 1017, 1018, 1019, 1020, 1021, 1022,
-					1023, 1024, 1025, 1026, 1027, 1028, 1029, 1030, 1031,
-					1032, 1033, 1034, 1085].includes(ship_id);
+				const isSpecificAlbumTypes = [
+					5026, 5027, 5256, 5269, 5275, 5276, 5277, 5278, 5279, 5280,
+					5281, 5282, 5283, 5284, 5285, 5286, 5287, 5288, 5289, 5290,
+					5291, 5292, 5293, 5294, 5295, 5296, 5297, 5298, 5299, 5300,
+					5301, 5302, 5303, 5304, 5305, 5306, 5357,
+				].includes(ship_id);
+				// No card but has damaged image
+				const isSpButHasTaiha = [5269, 5357].includes(ship_id);
 				const availableTypes = KC3Master.isSeasonalShip(ship_id) ?
-					isSpecificAlbumTypes ? ['character_full', 'character_up'] : [
+					isSpecificAlbumTypes ? isSpButHasTaiha ? [
+						'character_full', 'character_full_dmg',
+						'character_up', 'character_up_dmg'
+					] : ['character_full', 'character_up'] : [
 						'card', 'character_full', 'character_full_dmg',
 						'character_up', 'character_up_dmg'
 					] : KC3Master.isAbyssalShip(ship_id) ?
@@ -468,7 +472,9 @@
 					$(this).unbind("error");
 					// Hide optional debuffed abyssal boss alt lines,
 					// since damaged boss state can be only determined via battle API `api_xal01` property.
-					if($(this).attr("title").endsWith("_d")) $(this).hide();
+					// And _dmg images are not available since boss 1846
+					const typeTip = $(this).attr("title");
+					if(typeTip.endsWith("_d") || typeTip.endsWith("_dmg")) $(this).hide();
 				};
 				availableTypes.forEach(type => {
 					// Old suffix for debuffed boss CG used still, see `ShipLoader.hasai` & `hSuffix()`
@@ -913,14 +919,12 @@
 					return true;
 				};
 				const checkByShipBonusDef = (bonusDef, shipId, stype, gearType2) => (
-					(bonusDef.ids && bonusDef.ids.includes(shipId)) ||
-					(bonusDef.stypes && bonusDef.stypes.includes(stype)
-						&& KC3Master.equip_type(stype, shipId).includes(gearType2)) ||
-					(bonusDef.excludes && !bonusDef.bonusDef.includes(shipId)) ||
-					(bonusDef.excludeStypes && !bonusDef.excludeStypes.includes(stype)
-						&& KC3Master.equip_type(stype, shipId).includes(gearType2)) ||
-					(!bonusDef.ids && !bonusDef.stypes && !bonusDef.excludes && !bonusDef.excludeStypes
-						&& KC3Master.equip_type(stype, shipId).includes(gearType2))
+					KC3Master.equip_type(stype, shipId).includes(gearType2) &&
+					((bonusDef.ids && bonusDef.ids.includes(shipId)) ||
+					(bonusDef.stypes && bonusDef.stypes.includes(stype)) ||
+					(bonusDef.excludes && !bonusDef.excludes.includes(shipId)) ||
+					(bonusDef.excludeStypes && !bonusDef.excludeStypes.includes(stype)) ||
+					(!bonusDef.ids && !bonusDef.stypes && !bonusDef.excludes && !bonusDef.excludeStypes))
 				);
 				const checkByShipBonusRequirements = (byShip, shipId, stype, gearType2) =>
 					ensureArray(byShip).some(bonusDef => checkByShipBonusDef(bonusDef, shipId, stype, gearType2));

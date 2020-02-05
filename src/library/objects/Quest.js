@@ -189,7 +189,7 @@ known IDs see QuestManager
 		}; };
 		const checkExpectedHash = (meta) => {
 			if(meta.hash && this.hash && meta.hash !== this.hash) {
-				console.log(`Quest ${this.id} hash ${this.hash}, expected:`, meta.hash);
+				console.debug(`Quest ${this.id} hash ${this.hash}, expected:`, meta.hash);
 				return false;
 			}
 			return true;
@@ -313,10 +313,12 @@ known IDs see QuestManager
 		if([607, 608, 674].indexOf(this.id) > -1
 			&& currentCount > 0 && currentCount < maxCount)
 			return;
-		// client-side progress judgement for these:
-		// C16: no progress by PvP victories, 50% if 1st flagship equip 1 ration
-		// F25, F39: 50% if 1st flagship or inventory has no required aircraft
-		if([318, 628, 643].indexOf(this.id) > -1) {
+		// single tracking counter and client-side progress judgement for these:
+		//   C16: no progress by PvP victories, 50% if 1st flagship equip 1 ration
+		//   F25, F39, F90: 50%/80% if 1st flagship or inventory holds insufficient required items
+		// about all client-side progress conditions, see `main.js#DutyModel_`,
+		// these quests also affected by `api_completed_kind` and `api_c_list`
+		if([318, 628, 643, 653].indexOf(this.id) > -1) {
 			if (currentCount < maxCount && this.progress > 0)
 				trackingData[0] = maxCount;
 			return;
@@ -413,7 +415,7 @@ known IDs see QuestManager
 			"#996600", //6
 			"#AE76FA", //7
 			"#D75048", //8
-			"#555555", //9
+			"#D75048", //9
 		][(this.id+"").substring(0,1)];
 	};
 

@@ -245,8 +245,23 @@ Used by SortieManager
 	
 	KC3Node.prototype.defineAsDud = function( nodeData ){
 		this.type = "";
-		// since Fall 2018
+		// since Fall 2018, use message from API first
 		this.dudMessage = (nodeData.api_cell_flavor || {}).api_message;
+		// since Summer 2019, message from `main.js#CellTaskAnchorageRepair.prototype._start`
+		if(nodeData.api_event_id === 10) {
+			this.isEmergencyRepairNode = true;
+			this.canEmergencyRepairFlag = nodeData.api_anchorage_flag;
+			if(!this.dudMessage) this.dudMessage = "波静かな、泊地に適した海域です。";
+		}
+		// hard-coded messages, see `main.js#CellTaskFancy.prototype._selectMessage`
+		if(!this.dudMessage) this.dudMessage = ({
+			0: "気のせいだった。",
+			1: "敵影を見ず。",
+			3: "穏やかな海です。",
+			4: "穏やかな海峡です。",
+			5: "警戒が必要です。",
+			6: "静かな海です。",
+		})[nodeData.api_event_kind];
 		return this;
 	};
 	
@@ -1901,12 +1916,10 @@ Used by SortieManager
 	KC3Node.prototype.isBoss = function(){
 		// see advanceNode() (SortieManager.js) for api details,
 		// or alternatively at `Core.swf/common.models.bases.BattleBaseData.isBossMap()`
-		return (
-			// boss battle
-			this.eventId === 5 &&
-			// enemy single || enemy combined || night-to-day
-			(this.eventKind === 1 || this.eventKind === 5 || this.eventKind === 7)
-		);
+		// since Phase 2, see from `main.js#TaskNextSpot.prototype._createCellTaskBattle`
+		//                      to `main.js#BattleSceneModel.map_info.prototype.isBoss`
+		// only decided by api_event_id = 5, irrelevant to api_event_kind
+		return this.eventId === 5;
 	};
 
 	KC3Node.prototype.isValidBoss = function(){
@@ -1971,12 +1984,14 @@ Used by SortieManager
 		isRealBattle = true) {
 		const unexpectedList = [];
 		let sunkenShips = 0;
+		let shipCount = PlayerManager.fleets[fleetnum].ships.filter(id => id > 0).length;
 		predictedFleet.forEach(({ attacks }, position) => {
 			let ship = PlayerManager.fleets[fleetnum].ship(position);
 
 			// SHIP SIMULATION FOR SORTIE HISTORY
 			if (!isRealBattle && KC3Node.debugPrediction() && this.nodeData.id) {
 				position = position + sunkenShips;
+				shipCount = this.nodeData["fleet" + (fleetnum + 1)].length;
 				let shipData = this.nodeData["fleet" + (fleetnum + 1)][position];
 				while(this.sunken && this.sunken[this.playerCombined ? fleetnum : 0].includes(shipData.mst_id)) {
 					sunkenShips++;
@@ -2132,6 +2147,21 @@ Used by SortieManager
 						// Artillery spotting will keep re-rolling sp attacks
 						daySpecialAttackType = KC3Ship.specialAttackTypeDay(cutin);
 					}
+					// CVCI modifier correction for cutin type
+					if (cutin === 7) {
+						if (ciequip.length === 2) { daySpecialAttackType[3] = 1.15; }
+						else {
+							let torpedoBomberCnt = 0, 
+								diveBomberCnt = 0;
+							ciequip.forEach(slotitem => {
+								const master = KC3Master.slotitem(slotitem);
+								if (!master) { return; }
+								if (master.api_type[2] === 7) { diveBomberCnt++; }
+								else if (master.api_type[2] === 8) { torpedoBomberCnt++; }
+							});
+							if (torpedoBomberCnt === 1 && diveBomberCnt === 2) { daySpecialAttackType[3] = 1.2; }
+						}
+					}
 				}
 				
 				const combinedFleetType = this.playerCombinedType || PlayerManager.combinedFleet || 0;
@@ -2203,6 +2233,7 @@ Used by SortieManager
 								slots: ship.slots,
 								stats: ship.nakedStats(),
 								position: position,
+								shipCount: shipCount,
 								formation: formation,
 								isMainFleet: !this.playerCombined ? true : fleetnum == 0,
 								combinedFleet: combinedFleetType,
