@@ -10,6 +10,7 @@ body {
     font-family: "Segoe UI", Helvetica, Arial, sans-serif;
     color: #FFFFFF;
     font-size: 16px;
+    background-color: #1E1E1E;
 }
 
 #templates {
@@ -237,20 +238,21 @@ table#buttons td img {
     background-color: transparent;
     border: 0;
     color: #FFFFFF;
-    display: flex;
     top: 64px;
     bottom: 22px;
-    left: 128px;
+    left: 96px;
     right: 0;
     position: fixed;
-}
-
-.panel-content > .tile-box {
-    margin: 8px;
-    padding: 0;
     display: flex;
     flex-flow: row wrap;
+}
+
+.panel-content .tile-box {
+    margin: 0 8px 8px 8px;
+    padding: 0;
+    display: flex;
     background-color: #222222;
+    flex-flow: column wrap;
 }
 
 .box-header {
@@ -258,38 +260,49 @@ table#buttons td img {
     max-height: 18px;
     background-color: #2D2D2D;
     text-transform: uppercase;
-    width: 100%;
+    min-width: 100%;
     top: 0;
     display: flex;
     align-items: center;
     position: sticky;
     padding-left: 8px;
+    margin: 0;
+}
+
+.box-content {
+    overflow: hidden auto;
+}
+
+.fleetpanel.tile-box {
+    width: 350px;
+    height: calc(100% - 8px);
+    flex-flow: column nowrap;
 }
 
 #tab-panel {
     top: 64px;
     bottom: 22px;
-    width: 128px;
+    width: 96px;
     background-color: #333333;
     position: fixed;
     overflow: hidden auto;
     display: flex;
     flex-flow: column nowrap;
-    align-content: space-between;
+    align-items: space-between;
 }
 
-#tab-panel::-webkit-scrollbar {
+*::-webkit-scrollbar {
     width: 5px;
 }
 
-#tab-panel::-webkit-scrollbar-thumb {
+*::-webkit-scrollbar-thumb {
     background: #424242; 
 }
 
 .tabs-tab,
 #btn-stratroom {
-    width: 128px;
-    min-width: 128px;
+    width: inherit;
+    min-width: inherit;
     height: 36px;
     max-height: 36px;
     display: table;
@@ -297,6 +310,7 @@ table#buttons td img {
     cursor: pointer;
     margin: 0;
     font-size: 14px;
+    line-height: 12px;
 }
 
 .tabs-tab:not(.active):hover,
@@ -304,9 +318,20 @@ table#buttons td img {
     filter: brightness(1.25);
 }
 
+#btn-stratroom .liner {
+    font-size: 12px;
+    line-height: 11px;
+}
+
 .spacer {
     min-height: 0;
     max-height: 100%;
+    flex: 15 15 48px;
+}
+
+.spacer-h {
+    min-width: 0;
+    max-width: 100%;
     flex: 15 15 48px;
 }
 
@@ -324,8 +349,9 @@ table#buttons td img {
 }
 
 #btn-stratroom img {
-    width: 16px;
-    height: 16px;
+    width: 18px;
+    height: 18px;
+    margin-right: 4px;
 }
 
 table#status {
@@ -339,65 +365,75 @@ table#status tr td {
     padding-left: 8px;
 }
 
-.shipbox {
-    max-height: 48px;
-    min-height: 48px;
-    min-width: 325px;
-    width: 100%;
+.tile-box .shipboxes {
+    flex: 1 1 auto;
+    padding: 4px 8px 0;
+    margin: 0;
     display: flex;
-    padding: 0px 8px;
-    margin: 4px 0px;
+    flex-direction: column;
+    align-items: flex-start;
+    overflow: hidden auto;
 }
 
 .shipbox .shipicon {
-    max-width: 48px;
-    min-width: 48px;
-    max-height: 48px;
-    min-height: 48px;
+    width: 46px;
+    height: 46px;
     float: left;
+    border-radius: 50%;
+    background: #007ACD;
+    margin-right: 4px;
 }
 
 .shipbox .shipicon img {
-    width: 48px;
-    height: 48px;
+    width: inherit;
+    height: inherit;
+    object-fit: cover;
+    border-radius: 50%;
+    image-rendering: auto;
 }
 
-.ship-nameplate {
+.midbox {
     display: flex;
     align-items: center;
     margin-left: 4px;
     width: 100%;
+    flex-flow: column wrap;
+    align-items: flex-start;
 }
 
 .shipclass {
     text-transform: uppercase;
-    padding: 2px 4px;
-    height: 10px;
+    padding: 1px 2px;
+    height: 6px;
     width: 30px;
     text-align: center;
     background-color: #424242;
     color: #CCCCCC;
-    font-size: 12px;
-    margin-left: 8px;
+    font-size: 10px;
     display: table;
     float: left;
 }
 
 .shipname {
-    font-size: 22px;
+    font-size: 16px;
     margin-left: 4px;
-    width: 100%;
 }
 
-.shipcondition {
-    float: right;
+.ship-suffix {
+    color: #AAAAAA;
+    font-size: 12px;
+}
+
+.morale {
     display: flex;
     align-items: center;
+    width: fit-content;
+    justify-content: flex-end;
 }
 
 .moraledot {
-    width: 12px;
-    height: 12px;
+    width: 8px;
+    height: 8px;
     border-radius: 50%;
     margin-right: 4px;
 }
@@ -422,14 +458,15 @@ table#status tr td {
     background-color: #FF4747;
 }
 
-.moralevalue {
-    font-size: 14px;
+.morale-value {
+    font-size: 10px;
     color: #CCCCCC;
 }
 
-.hp-bar {
+.shipbox {
     display: flex;
     min-width: 100%;
+    margin: 0 0 8px 0;
 }
 
 .nameplate {
@@ -437,20 +474,136 @@ table#status tr td {
     width: 100%;
     align-items: center;
     z-index: 10;
+    height: 16px;
+    margin-bottom: 4px;
 }
 
-.hp-fore.hp-full {
-    align-items: center;
-    background-color: #007ACD;
-    opacity: 0.3;
+.midbar {
     width: 100%;
-    z-index: 0;
+    display: flex;
+    flex-flow: row nowrap;
+    justify-content: flex-start;
+    height: 8px;
+    overflow: hidden;
+    margin-bottom: 4px;
+    position: relative;
 }
 
-.hp-fore.hp-taiha {
+.hpbar {
+    display: flex;
+    flex-flow: row nowrap;
+    align-items: center;
+    justify-content: center;
+    height: 8px;
+    overflow: hidden;
+    margin-bottom: 2px;
+    flex: 1 1 auto;
+    position: relative;
+}
+
+.hpbar-bg {
+    background-color: #424242;
+    flex: 1 1 auto;
+    height: 8px;
+    overflow: hidden;
+    position: relative;
+}
+
+.hpbar-text {
+    color: #CCCCCC;
+    font-size: 10px;
+    z-index: 4;
+    text-align: right;
+    width: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    margin-left: 2px;
+}
+
+.hpbar-fg {
+    background-color: #AAAAAA;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 50%;
+    height: inherit;
+    z-index: 3;
+    float: left;
+    transition: width 250ms ease-out, background-color 250ms ease-out;
+}
+
+.hpbar-fg.hp-full {
+    align-items: center;
+    background-color: #35b877;
+    width: 100%;
+}
+
+.hpbar-fg.hp-ok {
+    align-items: center;
+    background-color: #4dc060;
+    width: 87%;
+}
+
+.hpbar-fg.hp-shouha {
+    align-items: center;
+    background-color: #fffd6c;
+    width: 75%;
+}
+
+.hpbar-fg.hp-chuuha {
+    align-items: center;
+    background-color: #ff8a47;
+    width: 50%;
+}
+
+.hpbar-fg.hp-taiha {
     align-items: center;
     background-color: #FF4747;
-    opacity: 0.3;
+    width: 25%;
+}
+
+.equips {
+    display: flex;
     width: 100%;
-    z-index: 0;
+    justify-content: flex-start;
+    align-items: center;
+    height:18px;
+}
+
+.equip-slot {
+    display: inline-block;
+    margin-right: 4px;
+}
+
+.equip-slot.slot-locked {
+    display: none;
+    visibility: hidden;
+}
+
+.equip-icon {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: #2D2D2D;
+    display: inline-block;
+}
+
+.equip-icon img {
+    width: inherit;
+    height: inherit;
+    border-radius: inherit;
+    object-fit: contain;
+    display: block;
+}
+
+.equip-cap {
+    font-size: 8px;
+    color: #AAAAAA;
+    display: inline-block;
+}
+
+.statbox {
+    margin-left: 4px;
+    width: 64px;
 }
