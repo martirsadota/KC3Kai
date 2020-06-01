@@ -415,17 +415,19 @@
 			if(maxSlots > 6) $(".fleet_ships", fleetBox).addClass("max_slot6");
 
 			// Show fleet info
-			const fstats = kcFleet.totalStats(true);
-			const fstatsImp = kcFleet.totalStats(true, "exped");
+			const fstats = kcFleet.totalStats(true, false, true);
+			const fstatsImp = kcFleet.totalStats(true, "exped", true);
 			$(".detail_level .detail_value", fleetBox).text( kcFleet.totalLevel() )
-				.attr("title", "{4}: -\u2605\t+\u2605\n{0}: {5}\t{9}\n{1}: {6}\t{10}\n{2}: {7}\t{11}\n{3}: {8}\t{12}".format(
+				.attr("title", "{0}: -\u2605\t+\u2605\n{1}: {6}\t{11}\n{2}: {7}\t{12}\n{3}: {8}\t{13}\n{4}: {9}\t{14}\n{5}: {10}\t{15}".format(
+					KC3Meta.term("ExpedTotalImp"),
 					KC3Meta.term("ExpedTotalFp"),
+					KC3Meta.term("ExpedTotalTorp"),
 					KC3Meta.term("ExpedTotalAa"),
 					KC3Meta.term("ExpedTotalAsw"),
 					KC3Meta.term("ExpedTotalLos"),
-					KC3Meta.term("ExpedTotalImp"),
-					fstats.fp, fstats.aa, fstats.as, fstats.ls,
+					fstats.fp, fstats.tp, fstats.aa, fstats.as, fstats.ls,
 					Math.qckInt("floor", fstatsImp.fp , 1),
+					Math.qckInt("floor", fstatsImp.tp , 1),
 					Math.qckInt("floor", fstatsImp.aa , 1),
 					Math.qckInt("floor", fstatsImp.as , 1),
 					Math.qckInt("floor", fstatsImp.ls , 1)
@@ -483,6 +485,17 @@
 			chrome.tabs.getZoom(undefined, scale => {
 				if(scale !== 1 || dpr !== 1) Object.keys(coords).forEach(p => { coords[p] *= scale * dpr; });
 				chrome.tabs.captureVisibleTab(undefined, {format: "png"}, (dataUrl) => {
+					if(chrome.runtime.lastError) {
+						console.log("Failed to screenshot fleet", chrome.runtime.lastError);
+						const errMsg = chrome.runtime.lastError.message || "";
+						if(errMsg.includes("'activeTab' permission")) {
+							alert("Click KC3\u6539 icon on browser toolbar to grant screenshot permission");
+						} else {
+							alert("Failed to capture fleet screenshot");
+						}
+						$(".ss_button", fleetBox).show();
+						return;
+					}
 					const canvas = document.createElement("canvas"), img = new Image();
 					img.onload = (e) => {
 						canvas.width = coords.w;

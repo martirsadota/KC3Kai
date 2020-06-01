@@ -1535,10 +1535,12 @@ Previously known as "Reactor"
 		"api_get_member/questlist":function(params, response, headers){
 			KC3QuestManager.load();
 			
-			// Update quest data for this page
+			// API changed since 2020-03-27, `api_disp_page` removed, all items will be returned based on `api_tab_id`
+			// Update quest data for ~this page~ this type of peroid tab
 			KC3QuestManager.definePage(
 				response.api_data.api_list,
-				response.api_data.api_disp_page
+				response.api_data.api_disp_page,
+				Number(params.api_tab_id)
 			);
 			
 			// Tell service to pass a message to gamescreen on inspected window to show overlays
@@ -1549,6 +1551,7 @@ Previously known as "Reactor"
 			})).execute();
 			
 			// Trigger quest listeners
+			KC3Network.trigger("QuestList", response.api_data.api_list);
 			KC3Network.trigger("Quests");
 		},
 		
@@ -1858,13 +1861,22 @@ Previously known as "Reactor"
 					KC3QuestManager.get(404).increment(); // D4: Weekly Expeditions
 					
 					switch(Number(expedNum)){
+					case 1:
+						KC3QuestManager.get(436).increment(0); // D33: Yearly, index 0
+						break;
+					case 2:
+						KC3QuestManager.get(436).increment(1); // D33: Yearly, index 1
+						break;
 					case 3:
 						KC3QuestManager.get(426).increment(0); // D24: Quarterly, index 0
 						KC3QuestManager.get(434).increment(0); // D32: Yearly, index 0
+						KC3QuestManager.get(436).increment(2); // D33: Yearly, index 2
 						break;
 					case 4:
 						KC3QuestManager.get(426).increment(1); // D24: Quarterly, index 1
 						KC3QuestManager.get(428).increment(0); // D26: Quarterly, index 0
+						KC3QuestManager.get(436).increment(3); // D33: Yearly, index 3
+						KC3QuestManager.get(437).increment(0); // D34: Yearly, index 0
 						break;
 					case 5:
 						KC3QuestManager.get(424).increment();  // D22: Monthly Expeditions
@@ -1876,6 +1888,7 @@ Previously known as "Reactor"
 						break;
 					case 10:
 						KC3QuestManager.get(426).increment(3); // D24: Quarterly, index 3
+						KC3QuestManager.get(436).increment(4); // D33: Yearly, index 4
 						break;
 					case 37:
 					case 38:
@@ -1891,6 +1904,15 @@ Previously known as "Reactor"
 						break;
 					case 102: // A3
 						KC3QuestManager.get(428).increment(2); // D26: Quarterly, index 2
+						break;
+					case 104: // A5
+						KC3QuestManager.get(437).increment(1); // D34: Yearly, index 1
+						break;
+					case 105: // A6
+						KC3QuestManager.get(437).increment(2); // D34: Yearly, index 2
+						break;
+					case 110: // B1
+						KC3QuestManager.get(437).increment(3); // D34: Yearly, index 3
 						break;
 					}
 					KC3Network.trigger("Quests");
@@ -2457,9 +2479,9 @@ Previously known as "Reactor"
 				case 13: // exchange 1 present box with 1 irako
 					//if(itemId === 60) PlayerManager.consumables.presents -= 1;
 				break;
-				case 21: // exchange 1 hishimochi with resources [600, 0, 0, 200] (guessed)
+				case 21: // exchange 1 hishimochi with resources [600, 0, 0, 200]
 				case 22: // exchange 1 hishimochi with materials [0, 2, 0, 1]
-				case 23: // exchange 1 hishimochi with 1 irako (guessed)
+				case 23: // exchange 1 hishimochi with 1 irako
 					//if(itemId === 62) PlayerManager.consumables.hishimochi -= 1;
 				break;
 				case 31: // exchange 3 saury (sashimi) with resources [0, 300, 150, 0]
@@ -2817,6 +2839,14 @@ Previously known as "Reactor"
 					[905,1,[1,2], true, true], // By2: 2nd requirement: [W1-2] A-rank+ the boss node
 					[905,2,[1,3], true, true], // By2: 3rd requirement: [W1-3] A-rank+ the boss node
 					[905,3,[1,5], true, true], // By2: 4th requirement: [W1-5] A-rank+ the boss node
+					[912,0,[1,3], true, true], // By3: 1st requirement: [W1-3] A-rank+ the boss node
+					[912,1,[2,1], true, true], // By3: 2nd requirement: [W2-1] A-rank+ the boss node
+					[912,2,[2,2], true, true], // By3: 3rd requirement: [W2-2] A-rank+ the boss node
+					[912,3,[2,3], true, true], // By3: 4th requirement: [W2-3] A-rank+ the boss node
+					[914,0,[4,1], true, true], // By4: 1st requirement: [W4-1] A-rank+ the boss node
+					[914,1,[4,2], true, true], // By4: 2nd requirement: [W4-2] A-rank+ the boss node
+					[914,2,[4,3], true, true], // By4: 3rd requirement: [W4-3] A-rank+ the boss node
+					[914,3,[4,4], true, true], // By4: 4th requirement: [W4-4] A-rank+ the boss node
 				],
 				[ /* S RANK */
 					[214,3,false,false], // Bw1: 4th requirement: 6 S ranks (index:3)
@@ -2888,6 +2918,10 @@ Previously known as "Reactor"
 					KC3QuestManager.get(318).increment(); // C16: Monthly Exercises 2
 				if(KC3QuestManager.isPrerequisiteFulfilled(330))
 					KC3QuestManager.get(330).increment(); // C29: Quarterly Exercises 1
+			}
+			if(rankPt >= 4) { // A-Rank+
+				if(KC3QuestManager.isPrerequisiteFulfilled(342))
+					KC3QuestManager.get(342).increment(); // C44: Quarterly Exercises 4
 			}
 			if(rankPt >= 5) { // S-Rank+
 				if(KC3QuestManager.isPrerequisiteFulfilled(337))
